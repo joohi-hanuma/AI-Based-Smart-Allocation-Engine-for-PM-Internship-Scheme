@@ -1,4 +1,4 @@
-# 🚀🤖 AI-Based-Smart-Allocation-Engine-for-PM-Internship-Scheme 🎯📊
+# 🚀🤖AI Based Smart Allocation Engine for PM Internship Scheme🎯📊
 
 ## Overview
 The PM Internship Scheme struggles to efficiently match thousands of applicants with suitable internship opportunities. This project demonstrates a **smart AI system** that matches students with internships based on skills, qualifications, location, interests, and fairness criteria.
