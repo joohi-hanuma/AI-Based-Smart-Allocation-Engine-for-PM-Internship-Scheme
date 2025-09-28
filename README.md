@@ -1,4 +1,4 @@
-# AI-Based-Smart-Allocation-Engine-for-PM-Internship-Scheme
+# 🚀🤖 AI-Based-Smart-Allocation-Engine-for-PM-Internship-Scheme 🎯📊
 
 ## Overview
 The PM Internship Scheme struggles to efficiently match thousands of applicants with suitable internship opportunities. This project demonstrates a **smart AI system** that matches students with internships based on skills, qualifications, location, interests, and fairness criteria.
@@ -22,10 +22,10 @@ The PM Internship Scheme struggles to efficiently match thousands of applicants 
 
 ## Screenshots
 
-**Student Data Entry Form**
+**🎓Student Data Entry Form**
 <img width="1918" height="1008" alt="image" src="https://github.com/user-attachments/assets/1ee61b05-9397-4fe5-918b-406e6ae84df4" />
 
-**Best-Fit Matching Result**  
+**⚡Best-Fit Matching Result**  
 <img width="1881" height="916" alt="image" src="https://github.com/user-attachments/assets/59a3f767-3295-454b-bba3-5c43076ef105" />
 
 ## Technologies Used
@@ -35,7 +35,7 @@ The PM Internship Scheme struggles to efficiently match thousands of applicants 
 - **Data Handling:** JSON/CSV/Google Sheets APIs  
 - **Deployment:** Local/cloud prototype
 
- ## Methodology
+## 🛠️Methodology
 1. Requirement gathering (student & company needs)  
 2. Data collection and preprocessing  
 3. AI Matching Engine for calculating best-fit percentages  
