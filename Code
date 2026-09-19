@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Internship Allocation System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .card h3 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .input-group input, .input-group select, .input-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s ease;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .results-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            margin-top: 20px;
+        }
+
+        .match-result {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            animation: slideIn 0.5s ease;
+        }
+
+        .match-score {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .fairness-info {
+            background: #e6fffa;
+            border: 1px solid #81e6d9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .audit-trail {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .skills-input {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .skill-tag {
+            background: #667eea;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .skill-tag.selected {
+            background: #4c51bf;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 AI Smart Internship Allocation System</h1>
+            <p>Intelligent matching with fairness-aware algorithms</p>
+        </div>
+
+        <!-- Stats Dashboard -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalStudents">0</div>
+                <div>Students Registered</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalInternships">0</div>
+                <div>Available Internships</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="matchSuccess">0%</div>
+                <div>Match Success Rate</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="fairnessScore">0%</div>
+                <div>Fairness Score</div>
+            </div>
+        </div>
+
+        <div class="dashboard">
+            <!-- Student Registration -->
+            <div class="card">
+                <h3>👨‍🎓 Student Registration</h3>
+                <form id="studentForm">
+                    <div class="input-group">
+                        <label>Name</label>
+                        <input type="text" id="studentName" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Skills (select multiple)</label>
+                        <div class="skills-input">
+                            <div class="skill-tag" data-skill="JavaScript">JavaScript</div>
+                            <div class="skill-tag" data-skill="Python">Python</div>
+                            <div class="skill-tag" data-skill="Java">Java</div>
+                            <div class="skill-tag" data-skill="React">React</div>
+                            <div class="skill-tag" data-skill="Data Analysis">Data Analysis</div>
+                            <div class="skill-tag" data-skill="Machine Learning">Machine Learning</div>
+                            <div class="skill-tag" data-skill="UI/UX">UI/UX</div>
+                            <div class="skill-tag" data-skill="Marketing">Marketing</div>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>CGPA</label>
+                        <input type="number" id="studentCGPA" step="0.01" min="0" max="10" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Location Preference</label>
+                        <select id="studentLocation" required>
+                            <option value="">Select Location</option>
+                            <option value="Mumbai">Mumbai</option>
+                            <option value="Delhi">Delhi</option>
+                            <option value="Bangalore">Bangalore</option>
+                            <option value="Hyderabad">Hyderabad</option>
+                            <option value="Chennai">Chennai</option>
+                            <option value="Pune">Pune</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Social Category</label>
+                        <select id="studentCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="General">General</option>
+                            <option value="OBC">OBC</option>
+                            <option value="SC">SC</option>
+                            <option value="ST">ST</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>District Type</label>
+                        <select id="districtType" required>
+                            <option value="">Select Type</option>
+                            <option value="Urban">Urban</option>
+                            <option value="Rural">Rural</option>
+                            <option value="Aspirational">Aspirational</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">Register Student</button>
+                </form>
+            </div>
+
+            <!-- Company/Internship Registration -->
+            <div class="card">
+                <h3>🏢 Internship Posting</h3>
+                <form id="internshipForm">
+                    <div class="input-group">
+                        <label>Company Name</label>
+                        <input type="text" id="companyName" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Position Title</label>
+                        <input type="text" id="positionTitle" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Required Skills</label>
+                        <div class="skills-input" id="companySkills">
+                            <div class="skill-tag" data-skill="JavaScript">JavaScript</div>
+                            <div class="skill-tag" data-skill="Python">Python</div>
+                            <div class="skill-tag" data-skill="Java">Java</div>
+                            <div class="skill-tag" data-skill="React">React</div>
+                            <div class="skill-tag" data-skill="Data Analysis">Data Analysis</div>
+                            <div class="skill-tag" data-skill="Machine Learning">Machine Learning</div>
+                            <div class="skill-tag" data-skill="UI/UX">UI/UX</div>
+                            <div class="skill-tag" data-skill="Marketing">Marketing</div>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label>Location</label>
+                        <select id="companyLocation" required>
+                            <option value="">Select Location</option>
+                            <option value="Mumbai">Mumbai</option>
+                            <option value="Delhi">Delhi</option>
+                            <option value="Bangalore">Bangalore</option>
+                            <option value="Hyderabad">Hyderabad</option>
+                            <option value="Chennai">Chennai</option>
+                            <option value="Pune">Pune</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>Available Positions</label>
+                        <input type="number" id="availablePositions" min="1" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Minimum CGPA</label>
+                        <input type="number" id="minCGPA" step="0.01" min="0" max="10" required>
+                    </div>
+                    <button type="submit" class="btn">Post Internship</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- AI Matching Section -->
+        <div class="card">
+            <h3>🤖 AI Matching Engine</h3>
+            <button class="btn" onclick="runAIMatching()">Run Smart Allocation</button>
+            <div id="matchingResults" class="results-section" style="display: none;">
+                <h4>Allocation Results</h4>
+                <div id="allocationList"></div>
+                <div class="fairness-info">
+                    <h4>Fairness Analysis</h4>
+                    <div id="fairnessAnalysis"></div>
+                </div>
+                <div class="audit-trail">
+                    <h4>Audit Trail</h4>
+                    <div id="auditLog"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data Storage (In-memory for demo)
+        let students = [];
+        let internships = [];
+        let allocations = [];
+        let selectedStudentSkills = [];
+        let selectedCompanySkills = [];
+
+        // Initialize skill selection
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSkillSelection();
+            updateStats();
+        });
+
+        function initializeSkillSelection() {
+            // Student skills selection
+            const studentSkillTags = document.querySelectorAll('#studentForm .skill-tag');
+            studentSkillTags.forEach(tag => {
+                tag.addEventListener('click', function() {
+                    const skill = this.dataset.skill;
+                    this.classList.toggle('selected');
+
+                    if (selectedStudentSkills.includes(skill)) {
+                        selectedStudentSkills = selectedStudentSkills.filter(s => s !== skill);
+                    } else {
+                        selectedStudentSkills.push(skill);
+                    }
+                });
+            });
+
+            // Company skills selection
+            const companySkillTags = document.querySelectorAll('#companySkills .skill-tag');
+            companySkillTags.forEach(tag => {
+                tag.addEventListener('click', function() {
+                    const skill = this.dataset.skill;
+                    this.classList.toggle('selected');
+
+                    if (selectedCompanySkills.includes(skill)) {
+                        selectedCompanySkills = selectedCompanySkills.filter(s => s !== skill);
+                    } else {
+                        selectedCompanySkills.push(skill);
+                    }
+                });
+            });
+        }
+
+        // Student Registration
+        document.getElementById('studentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const student = {
+                id: Date.now(),
+                name: document.getElementById('studentName').value,
+                skills: [...selectedStudentSkills],
+                cgpa: parseFloat(document.getElementById('studentCGPA').value),
+                location: document.getElementById('studentLocation').value,
+                category: document.getElementById('studentCategory').value,
+                districtType: document.getElementById('districtType').value,
+                allocated: false
+            };
+
+            students.push(student);
+            this.reset();
+            selectedStudentSkills = [];
+            document.querySelectorAll('#studentForm .skill-tag').forEach(tag => {
+                tag.classList.remove('selected');
+            });
+
+            updateStats();
+            alert('Student registered successfully!');
+        });
+
+        // Internship Registration
+        document.getElementById('internshipForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const internship = {
+                id: Date.now(),
+                company: document.getElementById('companyName').value,
+                position: document.getElementById('positionTitle').value,
+                requiredSkills: [...selectedCompanySkills],
+                location: document.getElementById('companyLocation').value,
+                positions: parseInt(document.getElementById('availablePositions').value),
+                minCGPA: parseFloat(document.getElementById('minCGPA').value),
+                allocated: 0
+            };
+
+            internships.push(internship);
+            this.reset();
+            selectedCompanySkills = [];
+            document.querySelectorAll('#companySkills .skill-tag').forEach(tag => {
+                tag.classList.remove('selected');
+            });
+
+            updateStats();
+            alert('Internship posted successfully!');
+        });
+
+        // AI Matching Algorithm
+        function calculateSkillMatch(studentSkills, requiredSkills) {
+            if (requiredSkills.length === 0) return 1;
+
+            const matchingSkills = studentSkills.filter(skill =>
+                requiredSkills.includes(skill)
+            );
+
+            return matchingSkills.length / requiredSkills.length;
+        }
+
+        function calculateLocationPreference(studentLocation, internshipLocation) {
+            return studentLocation === internshipLocation ? 1 : 0.5;
+        }
+
+        function calculateOverallScore(student, internship) {
+            const skillScore = calculateSkillMatch(student.skills, internship.requiredSkills);
+            const cgpaScore = student.cgpa >= internship.minCGPA ? 1 : 0.6;
+            const locationScore = calculateLocationPreference(student.location, internship.location);
+
+            // Weighted scoring
+            return (skillScore * 0.5) + (cgpaScore * 0.3) + (locationScore * 0.2);
+        }
+
+        function applyFairnessChecks(potentialMatches) {
+            // Sort by score initially
+            potentialMatches.sort((a, b) => b.score - a.score);
+
+            // Apply fairness adjustments
+            const categoryQuotas = {
+                'SC': 0.15,
+                'ST': 0.075,
+                'OBC': 0.27
+            };
+
+            const districtBonus = {
+                'Rural': 0.05,
+                'Aspirational': 0.10
+            };
+
+            // Adjust scores for fairness
+            potentialMatches.forEach(match => {
+                const student = match.student;
+
+                // Category bonus
+                if (categoryQuotas[student.category]) {
+                    match.adjustedScore = match.score + 0.1;
+                    match.fairnessBonus = 'Category reservation';
+                }
+
+                // District bonus
+                if (districtBonus[student.districtType]) {
+                    match.adjustedScore = (match.adjustedScore || match.score) + districtBonus[student.districtType];
+                    match.fairnessBonus = (match.fairnessBonus || '') + ' District priority';
+                }
+
+                if (!match.adjustedScore) {
+                    match.adjustedScore = match.score;
+                }
+            });
+
+            // Re-sort by adjusted scores
+            potentialMatches.sort((a, b) => b.adjustedScore - a.adjustedScore);
+
+            return potentialMatches;
+        }
+
+        function runAIMatching() {
+            if (students.length === 0 || internships.length === 0) {
+                alert('Please register students and internships first!');
+                return;
+            }
+
+            allocations = [];
+            const auditLog = [];
+
+            auditLog.push(`[${new Date().toISOString()}] Starting AI matching process`);
+            auditLog.push(`Students: ${students.length}, Internships: ${internships.length}`);
+
+            // Reset allocation status
+            students.forEach(student => student.allocated = false);
+            internships.forEach(internship => internship.allocated = 0);
+
+            // Generate all possible matches
+            const allMatches = [];
+
+            students.forEach(student => {
+                if (student.allocated) return;
+
+                internships.forEach(internship => {
+                    if (internship.allocated >= internship.positions) return;
+
+                    const score = calculateOverallScore(student, internship);
+
+                    if (score > 0.3) { // Minimum threshold
+                        allMatches.push({
+                            student: student,
+                            internship: internship,
+                            score: score,
+                            skillMatch: calculateSkillMatch(student.skills, internship.requiredSkills),
+                            locationMatch: calculateLocationPreference(student.location, internship.location)
+                        });
+                    }
+                });
+            });
+
+            auditLog.push(`Generated ${allMatches.length} potential matches`);
+
+            // Apply fairness checks
+            const fairMatches = applyFairnessChecks(allMatches);
+            auditLog.push('Applied fairness algorithms and priority adjustments');
+
+            // Allocate internships
+            fairMatches.forEach(match => {
+                if (!match.student.allocated && match.internship.allocated < match.internship.positions) {
+                    allocations.push({
+                        student: match.student,
+                        internship: match.internship,
+                        score: match.score,
+                        adjustedScore: match.adjustedScore,
+                        fairnessBonus: match.fairnessBonus,
+                        skillMatch: match.skillMatch,
+                        locationMatch: match.locationMatch
+                    });
+
+                    match.student.allocated = true;
+                    match.internship.allocated++;
+
+                    auditLog.push(`Allocated ${match.student.name} to ${match.internship.company} - ${match.internship.position} (Score: ${match.adjustedScore.toFixed(3)})`);
+                }
+            });
+
+            auditLog.push(`Final allocations: ${allocations.length}`);
+            auditLog.push(`[${new Date().toISOString()}] Matching process completed`);
+
+            displayResults(auditLog);
+            updateStats();
+        }
+
+        function displayResults(auditLog) {
+            const resultsSection = document.getElementById('matchingResults');
+            const allocationList = document.getElementById('allocationList');
+            const fairnessAnalysis = document.getElementById('fairnessAnalysis');
+            const auditLogElement = document.getElementById('auditLog');
+
+            // Display allocations
+            allocationList.innerHTML = '';
+
+            if (allocations.length === 0) {
+                allocationList.innerHTML = '<p>No suitable matches found. Please check requirements and try again.</p>';
+            } else {
+                allocations.forEach(allocation => {
+                    const resultDiv = document.createElement('div');
+                    resultDiv.className = 'match-result';
+
+                    resultDiv.innerHTML = `
+                        <div class="match-score">Match Score: ${(allocation.adjustedScore * 100).toFixed(1)}%</div>
+                        <strong>${allocation.student.name}</strong> → <strong>${allocation.internship.company}</strong>
+                        <br><em>${allocation.internship.position}</em>
+                        <br>Skills Match: ${(allocation.skillMatch * 100).toFixed(1)}% | Location: ${allocation.student.location} → ${allocation.internship.location}
+                        <br>CGPA: ${allocation.student.cgpa} | Category: ${allocation.student.category} | District: ${allocation.student.districtType}
+                        ${allocation.fairnessBonus ? `<br><small style="color: #ffd700;">✨ ${allocation.fairnessBonus}</small>` : ''}
+                    `;
+
+                    allocationList.appendChild(resultDiv);
+                });
+            }
+
+            // Fairness analysis
+            const categoryStats = {};
+            const districtStats = {};
+
+            allocations.forEach(allocation => {
+                const category = allocation.student.category;
+                const district = allocation.student.districtType;
+
+                categoryStats[category] = (categoryStats[category] || 0) + 1;
+                districtStats[district] = (districtStats[district] || 0) + 1;
+            });
+
+            fairnessAnalysis.innerHTML = `
+                <p><strong>Category Distribution:</strong></p>
+                ${Object.entries(categoryStats).map(([cat, count]) =>
+                    `<span style="margin-right: 15px;">${cat}: ${count} (${((count/allocations.length)*100).toFixed(1)}%)</span>`
+                ).join('')}
+                <p><strong>District Distribution:</strong></p>
+                ${Object.entries(districtStats).map(([dist, count]) =>
+                    `<span style="margin-right: 15px;">${dist}: ${count} (${((count/allocations.length)*100).toFixed(1)}%)</span>`
+                ).join('')}
+            `;
+
+            // Audit log
+            auditLogElement.innerHTML = auditLog.join('<br>');
+
+            resultsSection.style.display = 'block';
+        }
+
+        function updateStats() {
+            document.getElementById('totalStudents').textContent = students.length;
+            document.getElementById('totalInternships').textContent = internships.length;
+
+            const allocatedStudents = students.filter(s => s.allocated).length;
+            const successRate = students.length > 0 ? ((allocatedStudents / students.length) * 100).toFixed(0) : 0;
+            document.getElementById('matchSuccess').textContent = successRate + '%';
+
+            // Calculate fairness score based on diversity in allocations
+            let fairnessScore = 100;
+            if (allocations.length > 0) {
+                const categories = [...new Set(allocations.map(a => a.student.category))];
+                const districts = [...new Set(allocations.map(a => a.student.districtType))];
+                fairnessScore = Math.min(100, (categories.length + districts.length) * 12.5);
+            }
+            document.getElementById('fairnessScore').textContent = fairnessScore.toFixed(0) + '%';
+        }
+
+        // Add some sample data for demonstration
+        function addSampleData() {
+            // Sample students
+            const sampleStudents = [
+                {
+                    id: 1,
+                    name: "Rahul Kumar",
+                    skills: ["JavaScript", "React", "Python"],
+                    cgpa: 8.5,
+                    location: "Bangalore",
+                    category: "OBC",
+                    districtType: "Rural",
+                    allocated: false
+                },
+                {
+                    id: 2,
+                    name: "Priya Singh",
+                    skills: ["Data Analysis", "Python", "Machine Learning"],
+                    cgpa: 9.2,
+                    location: "Mumbai",
+                    category: "General",
+                    districtType: "Urban",
+                    allocated: false
+                },
+                {
+                    id: 3,
+                    name: "Arjun Patel",
+                    skills: ["Java", "UI/UX", "Marketing"],
+                    cgpa: 7.8,
+                    location: "Delhi",
+                    category: "SC",
+                    districtType: "Aspirational",
+                    allocated: false
+                }
+            ];
+
+            // Sample internships
+            const sampleInternships = [
+                {
+                    id: 1,
+                    company: "TechCorp Solutions",
+                    position: "Frontend Developer Intern",
+                    requiredSkills: ["JavaScript", "React"],
+                    location: "Bangalore",
+                    positions: 2,
+                    minCGPA: 7.5,
+                    allocated: 0
+                },
+                {
+                    id: 2,
+                    company: "DataTech Analytics",
+                    position: "Data Science Intern",
+                    requiredSkills: ["Python", "Data Analysis", "Machine Learning"],
+                    location: "Mumbai",
+                    positions: 1,
+                    minCGPA: 8.0,
+                    allocated: 0
+                }
+            ];
+
+            students.push(...sampleStudents);
+            internships.push(...sampleInternships);
+            updateStats();
+        }
+
+        // Add sample data on load for demonstration
+        setTimeout(addSampleData, 1000);
+    </script>
+</body>
+</html>
